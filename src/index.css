@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+html,
+body,
+#root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.interface {
+  position: relative;
+  top: calc(100% - 200px);
+  left: 50px;
+  width: 200px;
+  height: 200px;
+  background-color: red;
+}
+
+.colorContainer {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  bottom: 100px;
+  left: 100px;
+
+  width: 200px;
+  height: 50px;
+}
+
+.yellow {
+  width: 20%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: yellow;
+}
+
+.red {
+  width: 20%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: red;
+}
+
+.hotpink {
+  width: 20%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: hotpink;
+}
