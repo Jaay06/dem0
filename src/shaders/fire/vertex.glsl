@@ -13,7 +13,7 @@ uniform vec2 uResolution;
  
  void main(){
 
-    vec3 newPosition = csm_Position;
+    vec3 newPosition = position;
     float life = mod(uTime * timeMultiplier, uLife);
     newPosition.y += life;
 
@@ -28,12 +28,12 @@ uniform vec2 uResolution;
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectionPosition = projectionMatrix * viewPosition;
 
-    csm_PositionRaw = projectionPosition;
+    gl_Position = projectionPosition;
 
 
-    csm_PointSize = uSize * aSize * uResolution.y * scalingProgress ;
-     csm_PointSize *= 1.0 / - viewPosition.z;   
+    gl_PointSize = uSize * aSize * uResolution.y * scalingProgress ;
+    gl_PointSize *= 1.0 / - viewPosition.z;   
 
-//varying
-vFireProgress = fireProgress;
+    //varying
+    vFireProgress = fireProgress;
  }

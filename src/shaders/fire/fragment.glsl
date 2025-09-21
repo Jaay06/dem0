@@ -10,10 +10,9 @@ uniform sampler2D uTexture;
 void main() {
 
     float alphaTexture = texture(uTexture, gl_PointCoord).r;
-    // alphaTexture = 
 
     vec3 Color = mix(uColorA,uColorB, vFireProgress);
 
 
-       csm_DiffuseColor = vec4(Color, alphaTexture);
+       gl_FragColor = vec4(Color, alphaTexture);
      }

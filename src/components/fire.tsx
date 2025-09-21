@@ -1,20 +1,15 @@
-import CSM from 'three-custom-shader-material';
-
 import * as THREE from 'three';
-import fragmentShader from '../shaders/fire/fragment.glsl';
-import vertextShader from '../shaders/fire/vertex.glsl';
-
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { useTexture } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { FireShaderMaterial } from '../libs/fire-shader';
+import { useLayoutEffect, useRef } from 'react';
+import { useFrame, useThree, type ThreeElements } from '@react-three/fiber';
 import { useControls } from 'leva';
 
 export const Fire = () => {
   const bufferGeometryRef = useRef<THREE.BufferGeometry>(null!);
 
-  const fireTexture = useTexture('/textures/fire_01.png');
+  const { size, viewport } = useThree();
 
-  const pixelRatioRef = useRef<number>(null!);
+  const fireShaderRef = useRef<ThreeElements['fireShaderMaterial']>(null!);
 
   const { uColorA, uColorB, uLife, uSize, timeMuliplierValue, particlesCount } =
     useControls('fire', {
@@ -27,10 +22,10 @@ export const Fire = () => {
         step: 0.01,
       },
       uSize: {
-        value: 0.03,
-        min: 0.01,
-        max: 0.1,
-        step: 0.01,
+        value: 3,
+        min: 1,
+        max: 10,
+        step: 0.1,
       },
       timeMuliplierValue: {
         value: 0.9,
@@ -62,7 +57,7 @@ export const Fire = () => {
       const shape = new THREE.Cylindrical(
         radius,
         Math.random() * Math.PI * 2,
-        0.1
+        0.01
       );
 
       new THREE.CircleGeometry();
@@ -93,45 +88,24 @@ export const Fire = () => {
     }
   }, [timeMuliplierValue, particlesCount]);
 
-  const uniforms = useMemo(() => {
-    return {
-      uSize: new THREE.Uniform(uSize),
-      uColorA: new THREE.Uniform(new THREE.Color(uColorA)),
-      uColorB: new THREE.Uniform(new THREE.Color(uColorB)),
-      uTexture: new THREE.Uniform(fireTexture),
-      uTime: new THREE.Uniform(0),
-      uResolution: new THREE.Uniform(
-        new THREE.Vector2(window.innerWidth, window.innerHeight)
-      ),
-      uLife: new THREE.Uniform(uLife),
-    };
-  }, [fireTexture, uColorA, uColorB, uLife, uSize]);
-  useEffect(() => {
-    pixelRatioRef.current = Math.min(window.devicePixelRatio, 2);
-
-    window.addEventListener('resize', () => {
-      uniforms.uResolution.value = new THREE.Vector2(
-        window.innerWidth * pixelRatioRef.current,
-        window.innerHeight * pixelRatioRef.current
-      );
-    });
-  }, [uniforms.uResolution]);
-
   useFrame((state) => {
-    uniforms.uTime.value = state.clock.getElapsedTime();
+    fireShaderRef.current.uTime = state.clock.getElapsedTime();
   });
 
   return (
     <points position={[0, -0.5, 0]}>
       <bufferGeometry ref={bufferGeometryRef} />
-      <CSM
-        baseMaterial={THREE.PointsMaterial}
-        fragmentShader={fragmentShader}
-        vertexShader={vertextShader}
-        uniforms={uniforms}
+      <fireShaderMaterial
+        key={FireShaderMaterial.key}
+        ref={fireShaderRef}
+        uSize={uSize}
+        uColorA={uColorA}
+        uColorB={uColorB}
+        uLife={uLife}
+        uResolution={[size.width * viewport.dpr, size.height * viewport.dpr]}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
-        transparent={true}
+        transparent={false}
       />
     </points>
   );
